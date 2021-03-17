@@ -31,7 +31,7 @@ app.get('/api/workouts', (req, res) => {
 
 app.put('/api/workouts/:id', (req, res) => {
   const id = req.params.id
-  console.log(req.body)
+
 
   db.Workout.updateOne({ _id: `${id}` }, {
     $push: {
@@ -47,9 +47,22 @@ app.put('/api/workouts/:id', (req, res) => {
       }
     }
   }).then(dbUpdate => res.send(dbUpdate))
-
-
 })
+
+app.post("/api/workouts", (req, res) => {
+
+  let data = req.body;
+
+  db.Workout.create({
+    day: new Date().setDate(new Date().getDate())
+  }).then(dbUpdate => {
+    res.json(dbUpdate);
+  })
+    .catch(err => {
+      res.json(err);
+    });
+});
+
 
 app.listen(PORT, () => {
   console.log(`App running on port ${PORT}!`);
