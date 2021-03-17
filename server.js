@@ -3,7 +3,7 @@ const mongoose = require("mongoose");
 
 const PORT = process.env.PORT || 3000;
 
-const Workout = require("./models/Workout.js");
+const db = require("./models");
 
 const app = express();
 
@@ -16,9 +16,39 @@ app.use(express.json());
 
 
 mongoose.connect(process.env.MONGODB_URI || "mongodb://localhost/workout", { useNewUrlParser: true });
+app.get('/exercise', (req, res) => {
+  res.sendFile(__dirname + "/public/exercise.html")
+})
+
+app.get('/stats', (req, res) => {
+  res.sendFile(__dirname + "/public/stats.html")
+})
 
 app.get('/api/workouts', (req, res) => {
-    
+
+  db.Workout.find({}).then(dbNote => { res.send(dbNote) }).catch(err => { res.send(err) })
+})
+
+app.put('/api/workouts/:id', (req, res) => {
+  const id = req.params.id
+  console.log(req.body)
+
+  db.Workout.updateOne({ _id: `${id}` }, {
+    $push: {
+      exercises:
+      {
+        "type": req.body.type,
+        "name": req.body.name,
+        "duration": req.body.duration,
+        "distance": req.body.distance,
+        "weight": req.body.weight,
+        "reps": req.body.reps,
+        "sets": req.body.sets,
+      }
+    }
+  }).then(dbUpdate => res.send(dbUpdate))
+
+
 })
 
 app.listen(PORT, () => {

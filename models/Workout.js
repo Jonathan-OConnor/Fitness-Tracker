@@ -1,16 +1,26 @@
 const mongoose = require("mongoose");
+const { Exercise } = require(".");
 
 const Schema = mongoose.Schema;
+
+const ExerciseSchema = new Schema({
+  name: String,
+  type: String,
+  sets: Number,
+  reps: Number,
+  duration: Number,
+  distance: Number,
+});
 
 const WorkoutSchema = new Schema({
   day: {
     type: Date,
     default: Date.now
   },
-  exercises: [{
-    type: Schema.Types.ObjectId,
-    ref: "Exercise"
-  }]
+  exercises: {
+    type: [ExerciseSchema]
+
+  }
 });
 
 
