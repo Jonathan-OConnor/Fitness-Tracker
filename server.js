@@ -29,24 +29,46 @@ app.get('/api/workouts', (req, res) => {
   db.Workout.find({}).then(dbNote => { res.send(dbNote) }).catch(err => { res.send(err) })
 })
 
+app.get("/api/workouts/range", (req, res) => {
+  db.Workout.find({})
+    .then(dbWorkout => {
+      res.json(dbWorkout);
+    })
+    .catch(err => {
+      res.json(err);
+    });
+});
+
 app.put('/api/workouts/:id', (req, res) => {
   const id = req.params.id
-
-
-  db.Workout.updateOne({ _id: `${id}` }, {
-    $push: {
-      exercises:
-      {
-        "type": req.body.type,
-        "name": req.body.name,
-        "duration": req.body.duration,
-        "distance": req.body.distance,
-        "weight": req.body.weight,
-        "reps": req.body.reps,
-        "sets": req.body.sets,
+  if (req.body.type == "resistance") {
+    db.Workout.updateOne({ _id: `${id}` }, {
+      $push: {
+        exercises:
+        {
+          "type": req.body.type,
+          "name": req.body.name,
+          "duration": req.body.duration,
+          "weight": req.body.weight,
+          "reps": req.body.reps,
+          "sets": req.body.sets,
+        }
       }
-    }
-  }).then(dbUpdate => res.send(dbUpdate))
+    }).then(dbUpdate => res.send(dbUpdate))
+  } else {
+    db.Workout.updateOne({ _id: `${id}` }, {
+      $push: {
+        exercises:
+        {
+          "type": req.body.type,
+          "name": req.body.name,
+          "duration": req.body.duration,
+          "distance": req.body.distance,
+
+        }
+      }
+    }).then(dbUpdate => res.send(dbUpdate))
+  }
 })
 
 app.post("/api/workouts", (req, res) => {
